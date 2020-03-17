@@ -1,7 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 ## DEV NOTES
 ### Make everything testable to let the user know what failed.
 ### Currently only for aptitude based OS
+### Consider nuking the replacements for server.conf and client.conf and just custom making a file.
+### Look into hardening on docs
 # Install OpenVPN
 echo -e "[ + ] Installing OpenVPN"
 apt-get update && apt-get install openvpn -y
@@ -12,20 +14,24 @@ echo -e "[ + ] Get EasyRSA for signing keys and certs."
 mkdir ~/OpenVPN
 cd ~/OpenVPN
 wget -P ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
-tar -xzvf EasyRSA-3.0.4.tgz ~/OpenVPN/
+tar -xzvf ~/EasyRSA-3.0.4.tgz
 # Creating simulated separate servers.
-mv ~/OpenVPN/EasyRSA-3.0.4 CA
+mv ~/OpenVPN/EasyRSA-3.0.4 ~/OpenVPN/CA
+mkdir ~/OpenVPN/Server
 cp -r ~/OpenVPN/CA ~/OpenVPN/Server
 cd ~/OpenVPN/CA
 cp ~/OpenVPN/CA/vars.example ~/OpenVPN/CA/vars
+
+##### SEEMS TO FAIL HERE	
+
 echo -e "[ + ] Generating Certificates & Keys"
-read -p '\n\nCountry: ' reqCountry
-read -p '\nState/Province: ' reqState
-read -p '\nCity: ' reqCity
-read -p '\nOrganization: ' reqOrganization
-read -p '\nEmail: ' reqEmail
-read -p '\nDepartment: ' reqUnit
-# sed -i 's/old-text/new-text/g' input.txt
+read -p '\Country: ' reqCountry
+read -p 'State/Province: ' reqState
+read -p 'City: ' reqCity
+read -p 'Organization: ' reqOrganization
+read -p 'Email: ' reqEmail
+read -p 'Department: ' reqUnit
+
 ## But an if-else loop here for confirming info.
 sed -i "s/'#set_var EASYRSA_REQ_COUNTRY*'/'set_var EASYRSA_REQ_COUNTRY\t$reqCountry'/g" vars
 sed -i "s/'#set_var EASYRSA_REQ_PROVINCE*'/'set_var EASYRSA_REQ_PROVINCE\t$reqState'/g" vars
@@ -55,7 +61,8 @@ cp ~/OpenVPN/Server/ta.key /etc/openvpn
 cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
 mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs ############ BE SURE TO WHEN THE SCRIPT IS DONE chmod 400 this.
-## Prompt 'How many clients do you have?', then loop that many times.
+## Prompt 'How many clients do you have?', then loop that many times. 
+### Another solution would be to see if there is an option for multiple people sharing one client config.
 ####################
 .~/OpenVPN/Server/easyrsa gen-req client1 nopass
 cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
@@ -76,6 +83,7 @@ sed -i "s/'*tls-auth ta.key 0 # This file is secret'/'tls-auth ta.key 0 # This f
 ## prompt tap or tun; if != tun, sed -i "s/*'dev tun'/';dev tun'/g" server.conf sed -i "s/*';dev tap'/'dev tap'/g" server.conf type=tap else type=tun
 ## prompt tcp or udp; if != udp, sed -i "s/*'proto udp'/';proto udp'/g" server.conf sed -i"s/*';proto tcp'/'proto tcp'/g" server.conf sed -i "s/*'explicit-exit-notify 0'/'explicit-exit-notify 1'/g" server.conf proto=tcp else proto=udp
 echo "auth SHA256" >> /etc/openvpn/server.conf
+#echo "duplicate-cn" >> /etc/openvpn/server.conf ########## Prompt user for sharing same config file (security risk)
 sed -i "^.*dh*/s/*dh*/'dh dh.pem'/g"
 sed -i "s/*user*/'user nobody'/g"
 sed -i "s/*group*/'group nogroup'/g"
@@ -146,14 +154,4 @@ chmod -R 400 ~/client-configs ############ Added this line. Take out if problems
 chmod -R 000 ~/OpenVPN/CA
 chmod -R 400 ~/OpenVPN/Server
 cd ~/client-configs/clients
-echo -e "[ + ] FINISHED! VPN Setup complete!"
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
+echo -e "[ + ] FINISHED! VPN Setup complete!"    
