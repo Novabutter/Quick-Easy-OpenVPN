@@ -40,12 +40,12 @@ read -p 'Department: ' reqUnit
 # sed -i "s/'#set_var EASYRSA_REQ_ORG*'/'set_var EASYRSA_REQ_ORG\t$reqOrganization'/g" vars
 # sed -i "s/'#set_var EASYRSA_REQ_EMAIL*'/'set_var EASYRSA_REQ_EMAIL\t$reqEmail'/g" vars
 # sed -i "s/'#set_var EASYRSA_REQ_OU*'/'set_var EASYRSA_REQ_OU\t$reqUnit'/g" vars
-echo "if [ -z "$EASYRSA_CALLER" ]; then" > ~/OpenVPN/CA/vars
-echo "	echo "You appear to be sourcing an Easy-RSA 'vars' file." >&2" >> ~/OpenVPN/CA/vars
-echo "	echo "This is no longer necessary and is disallowed. See the section called" >&2" >> ~/OpenVPN/CA/vars
-echo "	echo "'How to use this file' near the top comments for more details." >&2" >> ~/OpenVPN/CA/vars
-echo "	return 1" >> ~/OpenVPN/CA/vars
-echo "fi" >> ~/OpenVPN/CA/vars
+# echo "if [ -z "$EASYRSA_CALLER" ]; then" > ~/OpenVPN/CA/vars
+# echo "	echo "You appear to be sourcing an Easy-RSA 'vars' file." >&2" >> ~/OpenVPN/CA/vars
+# echo "	echo "This is no longer necessary and is disallowed. See the section called" >&2" >> ~/OpenVPN/CA/vars
+# echo "	echo "'How to use this file' near the top comments for more details." >&2" >> ~/OpenVPN/CA/vars
+# echo "	return 1" >> ~/OpenVPN/CA/vars
+# echo "fi" >> ~/OpenVPN/CA/vars
 echo "set_var EASYRSA_REQ_COUNTRY\t$reqCountry" >> ~/OpenVPN/CA/vars
 echo "set_var EASYRSA_REQ_PROVINCE\t$reqState" >> ~/OpenVPN/CA/vars
 echo "set_var EASYRSA_REQ_CITY\t$reqCity" >> ~/OpenVPN/CA/vars
