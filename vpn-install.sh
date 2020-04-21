@@ -79,7 +79,7 @@ sudo cp /etc/openvpn/ca.crt ~/client-configs/keys/
 read -p 'What port is the VPN running on? Default is [1194]: ' port
 if [ $port="" ]
 then
-	$port="1194"
+	port="1194"
 fi
 echo "port $port" > ~/OpenVPN/CA/server.conf
 echo "ls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
@@ -87,13 +87,13 @@ echo "ls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
 read -p 'TCP or UDP? Default is [udp]: ' protocol
 if [ $protocol="" ]
 then
-	$protocol="udp"
+	protocol="udp"
 elif [ $protocol="tcp" -o  $protocol="TCP" ] 
 then
 	echo "explicit-exit-notify 1" >> ~/OpenVPN/CA/server.conf
-	$protocol="tcp"
+	protocol="tcp"
 else
-	$protocol="udp"
+	protocol="udp"
 fi
 echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
 ## prompt; 
@@ -101,7 +101,7 @@ echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
 read -p 'All traffic goes through VPN (tap) or related traffic goes through VPN (tun)? Default is [tun]: ' type
 if [ $type="" ]
 then
-	$type="tun"
+	type="tun"
 fi
 echo "dev $type" >> ~/OpenVPN/CA/server.conf
 echo "ca ca.crt" >> ~/OpenVPN/CA/server.conf
@@ -121,7 +121,7 @@ do
 	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
 	read -p 'Subnet Mask (ex. 255.255.255.0): ' subMask
 	echo 'push "route $netAddress $subMask"' >> ~/OpenVPN/CA/server.conf
-	read -p "Add more networks? (Y/N): " pushAnswer
+	read -p "Add more networks? (Y/N): " $pushAnswer
 done
 echo 'push "dhcp-option DNS 1.1.1.2"' >> ~/OpenVPN/CA/server.conf
 echo 'push "dhcp-option DNS 1.1.1.1"' >> ~/OpenVPN/CA/server.conf
