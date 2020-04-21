@@ -116,7 +116,7 @@ echo "ifconfig-pool-persist ipp.txt" >> ~/OpenVPN/CA/server.conf
 echo "user nobody" >> ~/OpenVPN/CA/server.conf
 echo "group nogroup" >> ~/OpenVPN/CA/server.conf
 read -p 'Reaching to another network? (Y/N): ' pushAnswer
-while [ $pushAnswer="Y" ] || [ $pushAnswer="y" ] ##########################################
+while [[ ($pushAnswer="Y" || $pushAnswer="y") ]] ##########################################
 do
 	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
 	read -p 'Subnet Mask (ex. 255.255.255.0): ' subMask
