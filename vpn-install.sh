@@ -53,41 +53,44 @@ echo "set_var EASYRSA_REQ_ORG\t$reqOrganization" >> ~/OpenVPN/CA/vars
 echo "set_var EASYRSA_REQ_EMAIL\t$reqEmail" >> ~/OpenVPN/CA/vars
 echo "set_var EASYRSA_REQ_OU\t$reqUnit" >> ~/OpenVPN/CA/vars
 # Create certs and keys
-.~/OpenVPN/CA/easyrsa init-pki
-## Experementing with piping the expected prompt of a common name
-## Another way to do it if this fails: echo "Y Y N N Y N Y Y N" | ./your_script
-echo "vpn" | .~/OpenVPN/CA/easyrsa build-ca nopass
-cd ~/OpenVPN/Server
-.~/OpenVPN/Server/easyrsa init-pki
-.~/OpenVPN/Server/easyrsa gen-req server nopass
-cp ~/OpenVPN/Server/pki/private/server.key /etc/openvpn
-cd ~/OpenVPN/CA/
-.~/OpenVPN/CA/easyrsa import-req ~/OpenVPN/Server/pki/reqs/server.req server
-## Another prompt
-echo "yes" | .~/OpenVPN/CA/easyrsa sign-req server server
-cp ~/OpenVPN/CA/pki/issued/server.crt /etc/openvpn
-cp ~/OpenVPN/CA/pki/ca.crt /etc/openvpn
-cd ~/OpenVPN/Server
-.~/OpenVPN/Server/easyrsa gen-dh
-openvpn --genkey --secret ta.key
-cp ~/OpenVPN/Server/ta.key /etc/openvpn
-cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
-mkdir -p ~/client-configs/keys
-chmod -R 700 ~/client-configs ############ BE SURE TO WHEN THE SCRIPT IS DONE chmod 400 this.
-## Prompt 'How many clients do you have?', then loop that many times. 
-### Another solution would be to see if there is an option for multiple people sharing one client config.
-####################
-.~/OpenVPN/Server/easyrsa gen-req client1 nopass
-cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
-cd ~/OpenVPN/CA
-.~/OpenVPN/CA/easyrsa import-req pki/reqs/client1.req client1
-## Another prompt
-echo "yes" | .~/OpenVPN/CA/easyrsa sign-req client client1
-cp ~/OpenVPN/CA/pki/issued/client1.crt ~/client-configs/keys/
-####################
-cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
-cp /etc/openvpn ~/client-configs/keys/
-echo -e "[ + ] Customizing server configuration" ################################################### 4/20/2020 Need to make my own custom file here.
+./easyrsa init-pki
+# ## Experementing with piping the expected prompt of a common name
+# ## Another way to do it if this fails: echo "Y Y N N Y N Y Y N" | ./your_script
+# echo "vpn" | .~/OpenVPN/CA/easyrsa build-ca nopass
+# cd ~/OpenVPN/Server
+# .~/OpenVPN/Server/easyrsa init-pki
+# .~/OpenVPN/Server/easyrsa gen-req server nopass
+# cp ~/OpenVPN/Server/pki/private/server.key /etc/openvpn
+# cd ~/OpenVPN/CA/
+# .~/OpenVPN/CA/easyrsa import-req ~/OpenVPN/Server/pki/reqs/server.req server
+# ## Another prompt
+# echo "yes" | .~/OpenVPN/CA/easyrsa sign-req server server
+# cp ~/OpenVPN/CA/pki/issued/server.crt /etc/openvpn
+# cp ~/OpenVPN/CA/pki/ca.crt /etc/openvpn
+# cd ~/OpenVPN/Server
+# .~/OpenVPN/Server/easyrsa gen-dh
+# openvpn --genkey --secret ta.key
+# cp ~/OpenVPN/Server/ta.key /etc/openvpn
+# cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
+# mkdir -p ~/client-configs/keys
+# chmod -R 700 ~/client-configs ############ BE SURE TO WHEN THE SCRIPT IS DONE chmod 400 this.
+# ## Prompt 'How many clients do you have?', then loop that many times. 
+# ### Another solution would be to see if there is an option for multiple people sharing one client config.
+# ####################
+# .~/OpenVPN/Server/easyrsa gen-req client1 nopass
+# cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
+# cd ~/OpenVPN/CA
+# .~/OpenVPN/CA/easyrsa import-req pki/reqs/client1.req client1
+# ## Another prompt
+# echo "yes" | .~/OpenVPN/CA/easyrsa sign-req client client1
+# cp ~/OpenVPN/CA/pki/issued/client1.crt ~/client-configs/keys/
+# ####################
+# cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
+# cp /etc/openvpn ~/client-configs/keys/
+# echo -e "[ + ] Customizing server configuration" ################################################### 4/20/2020 Need to make my own custom file here.
+
+
+
 # Customize server.conf file
 # cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz /etc/openvpn/
 # gzip -d /etc/openvpn/server.conf.gz
