@@ -108,7 +108,7 @@ echo "cert server.crt" >> ~/OpenVPN/CA/server.conf
 echo "key server.key" >> ~/OpenVPN/CA/server.conf
 echo "dh dh.pem" >> ~/OpenVPN/CA/server.conf
 echo "auth SHA256" >> ~/OpenVPN/CA/server.conf
-echo "server 10.8.0.0 255.255.255.0" ## This is a temporary default until you get the network determination in.
+echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf ## This is a temporary default until you get the network determination in.
 ## prompt for universal access via one configuration file (security risk)
 # echo "duplicate-cn" >> server.conf
 echo "ifconfig-pool-persist ipp.txt" >> ~/OpenVPN/CA/server.conf
@@ -116,7 +116,7 @@ echo "user nobody" >> ~/OpenVPN/CA/server.conf
 echo "group nogroup" >> ~/OpenVPN/CA/server.conf
 ###############
 read -p 'Reaching to another network? (Y/N): ' pushAnswer
-while [ $pushAnswer="Y" || $pushAnswer="y" ]
+while [ $pushAnswer="Y" ] || [ $pushAnswer="y" ] ##########################################
 do
 	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
 	read -p 'Subnet Mask (ex. 255.255.255.0): ' subMask
@@ -132,7 +132,7 @@ echo "persist-tun" >> ~/OpenVPN/CA/server.conf
 echo "status openvpn-status.log" >> ~/OpenVPN/CA/server.conf
 echo "verb 3" >> ~/OpenVPN/CA/server.conf
 sudo cp ~/OpenVPN/CA/server.conf /etc/openvpn/
-sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+echo "net.ipv4.ip_forward=1" >> sudo tee -a /etc/sysctl.conf ############# NO PERMISSIONS
 # Add iptable/firewall rules
 INTERFACE="$( ip -o link show | awk '{print $2,$9}' | grep "UP" | cut -d: -f 1 | cut -d@ -f 1)"
 sudo iptables -A INPUT -i $INTERFACE -m state --state NEW -p $proto --dport $port -j ACCEPT
@@ -140,10 +140,10 @@ sudo iptables -A INPUT -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -j 
 sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m state --state RELATED,ESTABLISHED -j ACCEPT
-sudo iptables-save > /etc/iptables/rules.v4
+sudo iptables-save > sudo tee -a /etc/iptables/rules.v4 ############# NO PERMISSIONS
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
-sudo systemctl start openvpn@server && sudo systemctl enable openvpn@server
+sudo systemctl stop openvpn@server && sudo systemctl start openvpn@server && sudo systemctl enable openvpn@server
 echo -e "[ + ] OpenVPN Server Running!"
 # Create Client Configuration
 echo -e "[ + ] Create Client Configs"
@@ -179,7 +179,7 @@ fi
 # script-security 2
 # up /etc/openvpn/update-resolv-conf
 # down /etc/openvpn/update-resolv-conf
-mkdir -p ~/client-configs/make_config.sh
+touch -p ~/client-configs/make_config.sh
 mkdir -p ~/client-configs/clients
 cd ~/client-configs
 echo "#!/bin/bash" > ~/client-configs/make_config.sh
@@ -208,8 +208,8 @@ echo -e "[ * ] VPN client configs generated"
 cp ~/client-configs/clients/client*.ovpn ~/Desktop/
 echo -e "[ + ] Locking down VPN setup files"
 # chattr too
-chmod -R 400 ~/client-configs ############ Added this line. Take out if problems copying.
-chmod -R 000 ~/OpenVPN/CA
-chmod -R 400 ~/OpenVPN/Server
+sudo chmod -R 400 ~/client-configs ############ Added this line. Take out if problems copying.
+sudo chmod -R 000 ~/OpenVPN/CA
+sudo chmod -R 400 ~/OpenVPN/Server
 cd ~/client-configs/clients/
 echo -e "[ + ] FINISHED! VPN Setup complete!"    
