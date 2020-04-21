@@ -6,9 +6,9 @@
 ### Look into hardening on docs
 # Install OpenVPN
 echo -e "[ + ] Installing OpenVPN"
-apt-get update && apt-get install openvpn -y
+sudo apt-get update && sudo apt-get install openvpn -y
 echo -e "[ + ] Installing Persistant iptables"
-apt-get install iptables-persistent -y
+sudo apt-get install iptables-persistent -y
 # Get EasyRSA for signing keys and certs
 echo -e "[ + ] Get EasyRSA for signing keys and certs."
 mkdir ~/OpenVPN
