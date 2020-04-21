@@ -18,7 +18,7 @@ tar -xzf ~/EasyRSA-3.0.4.tgz
 # Creating simulated separate servers.
 mv ~/OpenVPN/EasyRSA-3.0.4 ~/OpenVPN/CA
 mkdir ~/OpenVPN/Server
-cp -r ~/OpenVPN/CA ~/OpenVPN/Server
+cp -r ~/OpenVPN/CA/* ~/OpenVPN/Server/
 cd ~/OpenVPN/CA
 #cp ~/OpenVPN/CA/vars.example ~/OpenVPN/CA/vars
 
