@@ -80,9 +80,9 @@ chmod -R 700 ~/client-configs ############ BE SURE TO WHEN THE SCRIPT IS DONE ch
 echo "" | ./easyrsa gen-req client1 nopass
 cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
 cd ~/OpenVPN/CA
-./easyrsa import-req ~/OpenVPN/Server/pki/reqs/client1.req client1
+./easyrsa import-req ~/OpenVPN/Server/pki/reqs/client1.req client1 ####
 ## Another prompt
-echo "yes" | .~/easyrsa sign-req client client1
+echo "yes" | ./easyrsa sign-req client client1
 cp ~/OpenVPN/CA/pki/issued/client1.crt ~/client-configs/keys/
 ####################
 cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
