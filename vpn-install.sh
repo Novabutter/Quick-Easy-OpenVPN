@@ -115,7 +115,11 @@ echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf ## This is a te
 echo "ifconfig-pool-persist ipp.txt" >> ~/OpenVPN/CA/server.conf
 echo "user nobody" >> ~/OpenVPN/CA/server.conf
 echo "group nogroup" >> ~/OpenVPN/CA/server.conf
-read -p 'Reaching to another network? (Y/N): ' pushAnswer
+read -p 'Reaching to another network? (Y/N) Default is [N]: ' pushAnswer
+if [ $pushAnswer="" ]
+then
+	pushAnswer="N"
+fi
 while [[ $pushAnswer = "Y" || $pushAnswer = "y" ]]
 do
 	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
@@ -187,14 +191,13 @@ cat ${BASE_CONFIG} \
     <(echo -e '<ca>') \
     ${KEY_DIR}/ca.crt \
     <(echo -e '</ca>\n<cert>') \
-    ${KEY_DIR}/${1}.crt \
+    ${KEY_DIR}/client1.crt \
     <(echo -e '</cert>\n<key>') \
-    ${KEY_DIR}/${1}.key \
+    ${KEY_DIR}/client1.key \
     <(echo -e '</key>\n<tls-auth>') \
     ${KEY_DIR}/ta.key \
     <(echo -e '</tls-auth>') \
-    > ${OUTPUT_DIR}/${1}.ovpn
-chmod 700 ~/client-configs/make_config.sh
+    > ${OUTPUT_DIR}/client1.ovpn # needs to by dynamic
 cd ~/client-configs
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
 # for i in {0..$numClients}
