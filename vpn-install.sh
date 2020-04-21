@@ -46,12 +46,12 @@ read -p 'Department: ' reqUnit
 # echo "	echo "'How to use this file' near the top comments for more details." >&2" >> ~/OpenVPN/CA/vars
 # echo "	return 1" >> ~/OpenVPN/CA/vars
 # echo "fi" >> ~/OpenVPN/CA/vars
-echo "set_var EASYRSA_REQ_COUNTRY\t$reqCountry" >> ~/OpenVPN/CA/vars
-echo "set_var EASYRSA_REQ_PROVINCE\t$reqState" >> ~/OpenVPN/CA/vars
-echo "set_var EASYRSA_REQ_CITY\t$reqCity" >> ~/OpenVPN/CA/vars
-echo "set_var EASYRSA_REQ_ORG\t$reqOrganization" >> ~/OpenVPN/CA/vars
-echo "set_var EASYRSA_REQ_EMAIL\t$reqEmail" >> ~/OpenVPN/CA/vars
-echo "set_var EASYRSA_REQ_OU\t$reqUnit" >> ~/OpenVPN/CA/vars
+echo "set_var EASYRSA_REQ_COUNTRY '$reqCountry'" >> ~/OpenVPN/CA/vars
+echo "set_var EASYRSA_REQ_PROVINCE '$reqState'" >> ~/OpenVPN/CA/vars
+echo "set_var EASYRSA_REQ_CITY '$reqCity'" >> ~/OpenVPN/CA/vars
+echo "set_var EASYRSA_REQ_ORG '$reqOrganization'" >> ~/OpenVPN/CA/vars
+echo "set_var EASYRSA_REQ_EMAIL '$reqEmail'" >> ~/OpenVPN/CA/vars
+echo "set_var EASYRSA_REQ_OU '$reqUnit'" >> ~/OpenVPN/CA/vars
 # Create certs and keys
 ./easyrsa init-pki
 ## Experementing with piping the expected prompt of a common name
@@ -59,34 +59,34 @@ echo "set_var EASYRSA_REQ_OU\t$reqUnit" >> ~/OpenVPN/CA/vars
 echo "vpn" | ./easyrsa build-ca nopass
 cd ~/OpenVPN/Server
 ./easyrsa init-pki
-./easyrsa gen-req server nopass
-cp ~/OpenVPN/Server/pki/private/server.key /etc/openvpn
+echo "server" | ./easyrsa gen-req server nopass
+sudo cp ~/OpenVPN/Server/pki/private/server.key /etc/openvpn
 cd ~/OpenVPN/CA/
 ./easyrsa import-req ~/OpenVPN/Server/pki/reqs/server.req server
 ## Another prompt
 echo "yes" | ./easyrsa sign-req server server
-cp ~/OpenVPN/CA/pki/issued/server.crt /etc/openvpn
-cp ~/OpenVPN/CA/pki/ca.crt /etc/openvpn
+sudo cp ~/OpenVPN/CA/pki/issued/server.crt /etc/openvpn
+sudo cp ~/OpenVPN/CA/pki/ca.crt /etc/openvpn
 cd ~/OpenVPN/Server
 ./easyrsa gen-dh
 openvpn --genkey --secret ta.key
-cp ~/OpenVPN/Server/ta.key /etc/openvpn
-cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
+sudo cp ~/OpenVPN/Server/ta.key /etc/openvpn
+sudo cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
 mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs ############ BE SURE TO WHEN THE SCRIPT IS DONE chmod 400 this.
 ## Prompt 'How many clients do you have?', then loop that many times. 
 ### Another solution would be to see if there is an option for multiple people sharing one client config.
 ####################
-./easyrsa gen-req client1 nopass
+echo "" | ./easyrsa gen-req client1 nopass
 cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
 cd ~/OpenVPN/CA
-./easyrsa import-req pki/reqs/client1.req client1
+./easyrsa import-req ~/OpenVPN/Server/pki/reqs/client1.req client1
 ## Another prompt
 echo "yes" | .~/easyrsa sign-req client client1
 cp ~/OpenVPN/CA/pki/issued/client1.crt ~/client-configs/keys/
 ####################
 cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
-cp /etc/openvpn ~/client-configs/keys/
+sudo cp /etc/openvpn/ca.crt ~/client-configs/keys/
  echo -e "[ + ] Customizing server configuration" ################################################### 4/20/2020 Need to make my own custom file here.
 
 
