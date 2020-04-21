@@ -23,7 +23,6 @@ cd ~/OpenVPN/CA
 #cp ~/OpenVPN/CA/vars.example ~/OpenVPN/CA/vars
 
 
-
 echo -e "[ + ] Generating Certificates & Keys"
 read -p '\Country: ' reqCountry
 read -p 'State/Province: ' reqState
