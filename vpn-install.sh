@@ -179,7 +179,7 @@ fi
 # script-security 2
 # up /etc/openvpn/update-resolv-conf
 # down /etc/openvpn/update-resolv-conf
-touch -p ~/client-configs/make_config.sh
+touch ~/client-configs/make_config.sh
 mkdir -p ~/client-configs/clients
 cd ~/client-configs
 echo "#!/bin/bash" > ~/client-configs/make_config.sh
