@@ -60,7 +60,7 @@ sudo cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
 mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs ############ BE SURE TO WHEN THE SCRIPT IS DONE chmod 400 this.
 ## Prompt 'How many clients do you have?', then loop that many times. 
-####################
+#################### For loop here asking how many clients.
 echo "" | ./easyrsa gen-req client1 nopass
 cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
 cd ~/OpenVPN/CA
@@ -82,7 +82,7 @@ then
 	port="1194"
 fi
 echo "port $port" > ~/OpenVPN/CA/server.conf
-echo "ls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
+echo "tls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
 
 read -p 'TCP or UDP? Default is [udp]: ' protocol
 if [ $protocol="" ]
@@ -116,7 +116,7 @@ echo "ifconfig-pool-persist ipp.txt" >> ~/OpenVPN/CA/server.conf
 echo "user nobody" >> ~/OpenVPN/CA/server.conf
 echo "group nogroup" >> ~/OpenVPN/CA/server.conf
 read -p 'Reaching to another network? (Y/N): ' pushAnswer
-while [[ $pushAnswer = "Y" || $pushAnswer = "y" ]] ##########################################
+while [[ $pushAnswer = "Y" || $pushAnswer = "y" ]]
 do
 	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
 	read -p 'Subnet Mask (ex. 255.255.255.0): ' subMask
@@ -149,7 +149,6 @@ echo -e "[ + ] OpenVPN Server Running!"
 echo -e "[ + ] Create Client Configs"
 # How many clients?
 mkdir -p ~/client-configs/files
-#cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf ~/client-configs/base.conf
 cd ~/client-configs/
 read -p "Public Gateway IP: " ip
 echo "client" > ~/client-configs/base.conf
@@ -179,35 +178,33 @@ fi
 # script-security 2
 # up /etc/openvpn/update-resolv-conf
 # down /etc/openvpn/update-resolv-conf
-touch ~/client-configs/make_config.sh
 mkdir -p ~/client-configs/clients
 cd ~/client-configs
-echo "#!/bin/bash" > ~/client-configs/make_config.sh
-echo "KEY_DIR=~/client-configs/keys" >> ~/client-configs/make_config.sh
-echo "OUTPUT_DIR=~/client-configs/clients" >> ~/client-configs/make_config.sh
-echo "BASE_CONFIG=~/client-configs/base.conf" >> ~/client-configs/make_config.sh
-echo 'cat ${BASE_CONFIG} \' >> ~/client-configs/make_config.sh
-echo '<(echo -e "<ca>") \' >> ~/client-configs/make_config.sh #
-echo '${KEY_DIR}/ca.crt \' >> ~/client-configs/make_config.sh
-echo '<(echo -e "</ca>\n<cert>") \' >> ~/client-configs/make_config.sh
-echo '${KEY_DIR}/${1}.crt \ ' >> ~/client-configs/make_config.sh
-echo '<(echo -e "</cert>\n<key>") \' >> ~/client-configs/make_config.sh
-echo '${KEY_DIR}/${1}.key \ ' >> ~/client-configs/make_config.sh
-echo '<(echo -e "</key>\n<tls-auth>") \' >> ~/client-configs/make_config.sh
-echo '${KEY_DIR}/ta.key \' >> ~/client-configs/make_config.sh
-echo '<(echo -e "</tls-auth>") \' >> ~/client-configs/make_config.sh
-echo '> ${OUTPUT_DIR}/${1}.ovpn' >> ~/client-configs/make_config.sh
+KEY_DIR="~/client-configs/keys"
+OUTPUT_DIR="~/client-configs/clients"
+BASE_CONFIG="~/client-configs/base.conf"
+cat ${BASE_CONFIG} \
+    <(echo -e '<ca>') \
+    ${KEY_DIR}/ca.crt \
+    <(echo -e '</ca>\n<cert>') \
+    ${KEY_DIR}/${1}.crt \
+    <(echo -e '</cert>\n<key>') \
+    ${KEY_DIR}/${1}.key \
+    <(echo -e '</key>\n<tls-auth>') \
+    ${KEY_DIR}/ta.key \
+    <(echo -e '</tls-auth>') \
+    > ${OUTPUT_DIR}/${1}.ovpn
 chmod 700 ~/client-configs/make_config.sh
 cd ~/client-configs
-read -p 'How many individuals will need their own unique connection file?: ' numClients
-for i in {0..$numClients}
-do
-	./make_config.sh client$i
-done
+# read -p 'How many individuals will need their own unique connection file?: ' numClients
+# for i in {0..$numClients}
+# do
+./make_config.sh client1  ### Need to dynamic change
+# done
 echo -e "[ * ] VPN client configs generated"
 cp ~/client-configs/clients/client*.ovpn ~/Desktop/
 echo -e "[ + ] Locking down VPN setup files"
-# chattr too
+## chattr too
 #sudo chmod -R 400 ~/client-configs ############ Added this line. Take out if problems copying.
 #sudo chmod -R 000 ~/OpenVPN/CA
 #sudo chmod -R 400 ~/OpenVPN/Server
