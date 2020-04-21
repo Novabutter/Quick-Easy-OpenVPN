@@ -81,7 +81,7 @@ sudo cp /etc/openvpn/ca.crt ~/client-configs/keys/
 read -p 'What port is the VPN running on? Default is [1194]: ' port
 if [ $port="" ]
 then
-	port="1194"
+	$port="1194"
 fi
 echo "port $port" > ~/OpenVPN/CA/server.conf
 echo "ls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
@@ -89,10 +89,13 @@ echo "ls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
 read -p 'TCP or UDP? Default is [udp]: ' protocol
 if [ $protocol="" ]
 then
-	protocol="udp"
-elif [ $protocol="tcp" ||  $protocol="TCP" ] 
+	$protocol="udp"
+elif [ $protocol="tcp" -o  $protocol="TCP" ] 
 then
 	echo "explicit-exit-notify 1" >> ~/OpenVPN/CA/server.conf
+	$protocol="tcp"
+else
+	$protocol="udp"
 fi
 echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
 ## prompt; 
@@ -100,7 +103,7 @@ echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
 read -p 'All traffic goes through VPN (tap) or related traffic goes through VPN (tun)? Default is [tun]: ' type
 if [ $type="" ]
 then
-	type="tun"
+	$type="tun"
 fi
 echo "dev $type" >> ~/OpenVPN/CA/server.conf
 echo "ca ca.crt" >> ~/OpenVPN/CA/server.conf
@@ -114,9 +117,8 @@ echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf ## This is a te
 echo "ifconfig-pool-persist ipp.txt" >> ~/OpenVPN/CA/server.conf
 echo "user nobody" >> ~/OpenVPN/CA/server.conf
 echo "group nogroup" >> ~/OpenVPN/CA/server.conf
-###############
 read -p 'Reaching to another network? (Y/N): ' pushAnswer
-while [ $pushAnswer="Y" -o $pushAnswer="y" ]] ##########################################
+while [ $pushAnswer="Y" -o $pushAnswer="y" ] ##########################################
 do
 	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
 	read -p 'Subnet Mask (ex. 255.255.255.0): ' subMask
@@ -132,15 +134,15 @@ echo "persist-tun" >> ~/OpenVPN/CA/server.conf
 echo "status openvpn-status.log" >> ~/OpenVPN/CA/server.conf
 echo "verb 3" >> ~/OpenVPN/CA/server.conf
 sudo cp ~/OpenVPN/CA/server.conf /etc/openvpn/
-echo "net.ipv4.ip_forward=1" >> sudo tee -a /etc/sysctl.conf ############# NO PERMISSIONS
+echo "net.ipv4.ip_forward=1" >> sudo tee -a /etc/sysctl.conf 
 # Add iptable/firewall rules
 INTERFACE="$( ip -o link show | awk '{print $2,$9}' | grep "UP" | cut -d: -f 1 | cut -d@ -f 1)"
-sudo iptables -A INPUT -i $INTERFACE -m state --state NEW -p $proto --dport $port -j ACCEPT
+sudo iptables -A INPUT -i $INTERFACE -m state --state NEW -p $protocol --dport $port -j ACCEPT
 sudo iptables -A INPUT -i $type+ -j ACCEPT
-sudo iptables -A FORWARD -i $type+ -j 
+sudo iptables -A FORWARD -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m state --state RELATED,ESTABLISHED -j ACCEPT
-sudo iptables-save > sudo tee -a /etc/iptables/rules.v4 ############# NO PERMISSIONS
+sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
 sudo systemctl stop openvpn@server && sudo systemctl start openvpn@server && sudo systemctl enable openvpn@server
@@ -153,7 +155,7 @@ mkdir -p ~/client-configs/files
 cd ~/client-configs/
 read -p "Public Gateway IP: " ip
 echo "client" > ~/client-configs/base.conf
-echo "$dev $type" >> ~/client-configs/base.conf
+echo "dev $type" >> ~/client-configs/base.conf
 echo "proto $protcol" >> ~/client-configs/base.conf
 echo "remote $ip $port" >> ~/client-configs/base.conf
 echo "resolv-retry-infinite" >> ~/client-configs/base.conf
@@ -186,17 +188,17 @@ echo "#!/bin/bash" > ~/client-configs/make_config.sh
 echo "KEY_DIR=~/client-configs/keys" >> ~/client-configs/make_config.sh
 echo "OUTPUT_DIR=~/client-configs/clients" >> ~/client-configs/make_config.sh
 echo "BASE_CONFIG=~/client-configs/base.conf" >> ~/client-configs/make_config.sh
-echo "cat ${BASE_CONFIG} \ " >> ~/client-configs/make_config.sh
-echo "<(echo -e '<ca>') \ " >> ~/client-configs/make_config.sh
-echo "${KEY_DIR}/ca.crt \ " >> ~/client-configs/make_config.sh
-echo "<(echo -e '</ca>\n<cert>') \ " >> ~/client-configs/make_config.sh
-echo "${KEY_DIR}/${1}.crt \ " >> ~/client-configs/make_config.sh
-echo "<(echo -e '</cert>\n<key>') \ " >> ~/client-configs/make_config.sh
-echo "${KEY_DIR}/${1}.key \ " >> ~/client-configs/make_config.sh
-echo "<(echo -e '</key>\n<tls-auth>') \ " >> ~/client-configs/make_config.sh
-echo "${KEY_DIR}/ta.key \ " >> ~/client-configs/make_config.sh
-echo "<(echo -e '</tls-auth>') \ " >> ~/client-configs/make_config.sh
-echo "> ${OUTPUT_DIR}/${1}.ovpn " >> ~/client-configs/make_config.sh
+echo 'cat ${BASE_CONFIG} \' >> ~/client-configs/make_config.sh
+echo '<(echo -e "<ca>") \' >> ~/client-configs/make_config.sh #
+echo '${KEY_DIR}/ca.crt \' >> ~/client-configs/make_config.sh
+echo '<(echo -e "</ca>\n<cert>") \' >> ~/client-configs/make_config.sh
+echo '${KEY_DIR}/${1}.crt \ ' >> ~/client-configs/make_config.sh
+echo '<(echo -e "</cert>\n<key>") \' >> ~/client-configs/make_config.sh
+echo '${KEY_DIR}/${1}.key \ ' >> ~/client-configs/make_config.sh
+echo '<(echo -e "</key>\n<tls-auth>") \' >> ~/client-configs/make_config.sh
+echo '${KEY_DIR}/ta.key \' >> ~/client-configs/make_config.sh
+echo '<(echo -e "</tls-auth>") \' >> ~/client-configs/make_config.sh
+echo '> ${OUTPUT_DIR}/${1}.ovpn' >> ~/client-configs/make_config.sh
 chmod 700 ~/client-configs/make_config.sh
 cd ~/client-configs
 read -p 'How many individuals will need their own unique connection file?: ' numClients
@@ -208,8 +210,8 @@ echo -e "[ * ] VPN client configs generated"
 cp ~/client-configs/clients/client*.ovpn ~/Desktop/
 echo -e "[ + ] Locking down VPN setup files"
 # chattr too
-sudo chmod -R 400 ~/client-configs ############ Added this line. Take out if problems copying.
-sudo chmod -R 000 ~/OpenVPN/CA
-sudo chmod -R 400 ~/OpenVPN/Server
-cd ~/client-configs/clients/
+#sudo chmod -R 400 ~/client-configs ############ Added this line. Take out if problems copying.
+#sudo chmod -R 000 ~/OpenVPN/CA
+#sudo chmod -R 400 ~/OpenVPN/Server
+#cd ~/client-configs/clients/
 echo -e "[ + ] FINISHED! VPN Setup complete!"    
