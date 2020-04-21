@@ -76,8 +76,6 @@ sudo cp /etc/openvpn/ca.crt ~/client-configs/keys/
 
 
 # Customize server.conf file
-#sudo cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz /etc/openvpn/
-#sudo gzip -d /etc/openvpn/server.conf.gz
 read -p 'What port is the VPN running on? Default is [1194]: ' port
 if [ $port="" ]
 then
