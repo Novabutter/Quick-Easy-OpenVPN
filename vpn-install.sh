@@ -146,11 +146,11 @@ while [[ $pushAnswer = "Y" || $pushAnswer = "y" ]]
 do
 	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
 	read -p 'Subnet Mask (ex. 255.255.255.0): ' subMask
-	echo 'push "route $netAddress $subMask"' >> ~/OpenVPN/CA/server.conf
+	echo 'push "route ${netAddress} ${subMask}"' >> ~/OpenVPN/CA/server.conf
 	read -p "Add more networks? (Y/N): " pushAnswer
 done
-echo 'push "dhcp-option DNS 1.1.1.2"' >> ~/OpenVPN/CA/server.conf
-echo 'push "dhcp-option DNS 1.1.1.1"' >> ~/OpenVPN/CA/server.conf
+#echo 'push "dhcp-option DNS 1.1.1.2"' >> ~/OpenVPN/CA/server.conf
+#echo 'push "dhcp-option DNS 1.1.1.1"' >> ~/OpenVPN/CA/server.conf
 echo "keepalive 10 120" >> ~/OpenVPN/CA/server.conf
 echo "comp-lzo" >> ~/OpenVPN/CA/server.conf
 echo "persist-key" >> ~/OpenVPN/CA/server.conf
