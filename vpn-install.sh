@@ -59,9 +59,19 @@ sudo cp ~/OpenVPN/Server/ta.key /etc/openvpn
 sudo cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
 mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs 
-# read -p 'How many clients will their be?: ' numClients
+# read -p 'How many clients will their be? Default is [1]: ' numClients
+# if [ $numClients="" ]
+# then
+# 	numClients="1"
+# fi
 # for i in {0..$numClients}
 # do
+	# echo "" | ./easyrsa gen-req client{$i} nopass 1>/dev/null
+	# cp ~/OpenVPN/Server/pki/private/client{$i}.key ~/client-configs/keys/
+	# cd ~/OpenVPN/CA
+	# ./easyrsa import-req ~/OpenVPN/Server/pki/reqs/client{$i}.req client{$i} 1>/dev/null 
+
+	# echo "yes" | ./easyrsa sign-req client client{$i}
 echo "" | ./easyrsa gen-req client1 nopass 1>/dev/null
 cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
 cd ~/OpenVPN/CA
@@ -187,18 +197,20 @@ fi
 mkdir -p ~/client-configs/clients
 cd ~/client-configs/
 touch ~/client-configs/clients/client1.ovpn
+echo "hello" > ~/client-configs/clients/client1.ovpn
 KEY_DIR="~/client-configs/keys"
 OUTPUT_DIR="~/client-configs/clients"
 BASE_CONFIG="~/client-configs/base.conf"
-echo "cat $BASE_CONFIG" > $OUTPUT_DIR/client1.ovpn
-echo "(echo -e '<ca>')" >> $OUTPUT_DIR/client1.ovpn
-cat "$KEY_DIR/ca.crt" >> $OUTPUT_DIR/client1.ovpn
-echo "(echo -e '</ca>\n<cert>')" >> $OUTPUT_DIR/client1.ovpn
-cat "$KEY_DIR/client1.crt" >> $OUTPUT_DIR/client1.ovpn
-cat "$KEY_DIR/client1.key" >> $OUTPUT_DIR/client1.ovpn
-echo "(echo -e '</key>\n<tls-auth>')" >> $OUTPUT_DIR/client1.ovpn
-cat "$KEY_DIR/ta.key" >> $OUTPUT_DIR/client1.ovpn
-echo "(echo -e '</tls-auth>')"  >> $OUTPUT_DIR/client1.ovpn
+# echo "cat $BASE_CONFIG" > $OUTPUT_DIR/client1.ovpn
+# echo "(echo -e '<ca>')" >> $OUTPUT_DIR/client1.ovpn
+# cat "$KEY_DIR/ca.crt" >> $OUTPUT_DIR/client1.ovpn
+# echo "(echo -e '</ca>\n<cert>')" >> $OUTPUT_DIR/client1.ovpn
+# cat "$KEY_DIR/client1.crt" >> $OUTPUT_DIR/client1.ovpn
+# cat "$KEY_DIR/client1.key" >> $OUTPUT_DIR/client1.ovpn
+# echo "(echo -e '</key>\n<tls-auth>')" >> $OUTPUT_DIR/client1.ovpn
+# cat "$KEY_DIR/ta.key" >> $OUTPUT_DIR/client1.ovpn
+# echo "(echo -e '</tls-auth>')"  >> $OUTPUT_DIR/client1.ovpn
+echo "you" >> $OUTPUT_DIR/client1.ovpn
 
 
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
