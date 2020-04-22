@@ -6,15 +6,15 @@
 ### Look into hardening on docs
 # Install OpenVPN
 echo -e "[ + ] Installing OpenVPN"
-sudo apt-get update && sudo apt-get install openvpn -y
+sudo apt-get update 1>/dev/null && sudo apt-get install openvpn -y 1>/dev/null
 echo -e "[ + ] Installing Persistant iptables"
-sudo apt-get install iptables-persistent -y
+sudo apt-get install iptables-persistent -y 1>/dev/null
 # Get EasyRSA for signing keys and certs
 echo -e "[ + ] Get EasyRSA for signing keys and certs."
 mkdir ~/OpenVPN
 cd ~/OpenVPN
-wget -P ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz
-tar -xzf ~/EasyRSA-3.0.4.tgz
+wget -P ~/ https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz 1>/dev/null
+tar -xzf ~/EasyRSA-3.0.4.tgz 1>/dev/null
 # Creating simulated separate servers.
 mv ~/OpenVPN/EasyRSA-3.0.4 ~/OpenVPN/CA
 mkdir ~/OpenVPN/Server
@@ -41,30 +41,30 @@ echo "set_var EASYRSA_REQ_EMAIL '$reqEmail'" >> ~/OpenVPN/CA/vars
 echo "set_var EASYRSA_REQ_OU '$reqUnit'" >> ~/OpenVPN/CA/vars
 # Create certs and keys
 ./easyrsa init-pki
-echo "vpn" | ./easyrsa build-ca nopass
+echo "vpn" | ./easyrsa build-ca nopass 1>/dev/null
 cd ~/OpenVPN/Server
 ./easyrsa init-pki
-echo "server" | ./easyrsa gen-req server nopass
+echo "server" | ./easyrsa gen-req server nopass 1>/dev/null
 sudo cp ~/OpenVPN/Server/pki/private/server.key /etc/openvpn
 cd ~/OpenVPN/CA/
 ./easyrsa import-req ~/OpenVPN/Server/pki/reqs/server.req server
 ## Another prompt
-echo "yes" | ./easyrsa sign-req server server
+echo "yes" | ./easyrsa sign-req server server 1>/dev/null
 sudo cp ~/OpenVPN/CA/pki/issued/server.crt /etc/openvpn
 sudo cp ~/OpenVPN/CA/pki/ca.crt /etc/openvpn
 cd ~/OpenVPN/Server
 ./easyrsa gen-dh
-openvpn --genkey --secret ta.key
+openvpn --genkey --secret ta.key 1>/dev/null
 sudo cp ~/OpenVPN/Server/ta.key /etc/openvpn
 sudo cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
 mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs ############ BE SURE TO WHEN THE SCRIPT IS DONE chmod 400 this.
 ## Prompt 'How many clients do you have?', then loop that many times. 
 #################### For loop here asking how many clients.
-echo "" | ./easyrsa gen-req client1 nopass
+echo "" | ./easyrsa gen-req client1 nopass 1>/dev/null
 cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
 cd ~/OpenVPN/CA
-./easyrsa import-req ~/OpenVPN/Server/pki/reqs/client1.req client1 ####
+./easyrsa import-req ~/OpenVPN/Server/pki/reqs/client1.req client1 1>/dev/null 
 ## Another prompt
 echo "yes" | ./easyrsa sign-req client client1
 cp ~/OpenVPN/CA/pki/issued/client1.crt ~/client-configs/keys/
@@ -147,7 +147,7 @@ sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m state --state RELATED,ESTABL
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
-sudo systemctl start openvpn@server && sudo systemctl enable openvpn@server
+sudo systemctl restart openvpn@server 1>/dev/null && sudo systemctl enable openvpn@server 1>/dev/null
 echo -e "[ + ] OpenVPN Server Running!"
 # Create Client Configuration
 echo -e "[ + ] Create Client Configs"
@@ -187,7 +187,7 @@ cd ~/client-configs
 KEY_DIR="~/client-configs/keys"
 OUTPUT_DIR="~/client-configs/clients"
 BASE_CONFIG="~/client-configs/base.conf"
-cat ${BASE_CONFIG} \
+echo "${BASE_CONFIG} \
     <(echo -e '<ca>') \
     ${KEY_DIR}/ca.crt \
     <(echo -e '</ca>\n<cert>') \
@@ -196,7 +196,7 @@ cat ${BASE_CONFIG} \
     ${KEY_DIR}/client1.key \
     <(echo -e '</key>\n<tls-auth>') \
     ${KEY_DIR}/ta.key \
-    <(echo -e '</tls-auth>') \
+    <(echo -e '</tls-auth>')"
     > ${OUTPUT_DIR}/client1.ovpn # needs to by dynamic
 
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
