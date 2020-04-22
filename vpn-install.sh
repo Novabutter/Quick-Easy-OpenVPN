@@ -168,7 +168,7 @@ sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m state --state RELATED,ESTABL
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
-sudo systemctl restart openvpn@server 1>/dev/null && sudo systemctl enable openvpn@server 1>/dev/null
+sudo systemctl enable openvpn@server 1>/dev/null && sudo /etc/init.d/openvpn restart 1>/dev/null
 echo -e "[ + ] OpenVPN Server Running!"
 # Create Client Configuration
 echo -e "[ + ] Create Client Configs"
