@@ -190,15 +190,15 @@ touch ~/client-configs/clients/client1.ovpn
 KEY_DIR="~/client-configs/keys"
 OUTPUT_DIR="~/client-configs/clients"
 BASE_CONFIG="~/client-configs/base.conf"
-echo "cat $BASE_CONFIG" > ${OUTPUT_DIR}/client1.ovpn
-echo "(echo -e '<ca>')" >> ${OUTPUT_DIR}/client1.ovpn
-cat "$KEY_DIR/ca.crt" >> ${OUTPUT_DIR}/client1.ovpn
-echo "(echo -e '</ca>\n<cert>')" >> ${OUTPUT_DIR}/client1.ovpn
-cat "$KEY_DIR/client1.crt" >> ${OUTPUT_DIR}/client1.ovpn
-cat "$KEY_DIR/client1.key" >> ${OUTPUT_DIR}/client1.ovpn
-echo "(echo -e '</key>\n<tls-auth>')" >> ${OUTPUT_DIR}/client1.ovpn
-cat "$KEY_DIR/ta.key" >> ${OUTPUT_DIR}/client1.ovpn
-echo "(echo -e '</tls-auth>')"  >> ${OUTPUT_DIR}/client1.ovpn
+echo "cat $BASE_CONFIG" > $OUTPUT_DIR/client1.ovpn
+echo "(echo -e '<ca>')" >> $OUTPUT_DIR/client1.ovpn
+cat "$KEY_DIR/ca.crt" >> $OUTPUT_DIR/client1.ovpn
+echo "(echo -e '</ca>\n<cert>')" >> $OUTPUT_DIR/client1.ovpn
+cat "$KEY_DIR/client1.crt" >> $OUTPUT_DIR/client1.ovpn
+cat "$KEY_DIR/client1.key" >> $OUTPUT_DIR/client1.ovpn
+echo "(echo -e '</key>\n<tls-auth>')" >> $OUTPUT_DIR/client1.ovpn
+cat "$KEY_DIR/ta.key" >> $OUTPUT_DIR/client1.ovpn
+echo "(echo -e '</tls-auth>')"  >> $OUTPUT_DIR/client1.ovpn
 
 
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
