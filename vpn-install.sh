@@ -144,10 +144,10 @@ sudo iptables -A INPUT -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m state --state RELATED,ESTABLISHED -j ACCEPT
-sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 
+sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
-sudo systemctl stop openvpn@server && sudo systemctl start openvpn@server && sudo systemctl enable openvpn@server
+sudo systemctl start openvpn@server && sudo systemctl enable openvpn@server
 echo -e "[ + ] OpenVPN Server Running!"
 # Create Client Configuration
 echo -e "[ + ] Create Client Configs"
@@ -198,11 +198,11 @@ cat ${BASE_CONFIG} \
     ${KEY_DIR}/ta.key \
     <(echo -e '</tls-auth>') \
     > ${OUTPUT_DIR}/client1.ovpn # needs to by dynamic
-cd ~/client-configs
+
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
 # for i in {0..$numClients}
 # do
-./make_config.sh client1  ### Need to dynamic change
+#./make_config.sh client1  ### Need to dynamic change
 # done
 echo -e "[ * ] VPN client configs generated"
 cp ~/client-configs/clients/client*.ovpn ~/Desktop/
