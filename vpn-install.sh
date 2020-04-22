@@ -126,6 +126,7 @@ echo "cert server.crt" >> ~/OpenVPN/CA/server.conf
 echo "key server.key" >> ~/OpenVPN/CA/server.conf
 echo "dh dh.pem" >> ~/OpenVPN/CA/server.conf
 echo "auth SHA256" >> ~/OpenVPN/CA/server.conf
+echo "cipher AES-256-CBC" >> ~/OpenVPN/CA/server.conf
 echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf ## This is a temporary default until you get the network determination in.
 echo "--- The follwing is useful to allow if using a single client profile to share ---"
 read -p 'Allow multiple connections per client (potential security risk)? (Y/N): ' duplicateAllow
@@ -186,13 +187,14 @@ echo "user nobody" >> ~/client-configs/base.conf
 echo "group nogroup" >> ~/client-configs/base.conf
 echo "persist-key" >> ~/client-configs/base.conf
 echo "persist-tun" >> ~/client-configs/base.conf
-echo "ca ca.crt" >> ~/client-configs/base.conf
-echo "cert client.crt" >> ~/client-configs/base.conf
-echo "cert client.key" >> ~/client-configs/base.conf
+#echo "ca ca.crt" >> ~/client-configs/base.conf
+#echo "cert client.crt" >> ~/client-configs/base.conf
+#echo "key client.key" >> ~/client-configs/base.conf
 echo "tls-auth ta.key 1" >> ~/client-configs/base.conf
 echo "auth SHA256" >> ~/client-configs/base.conf
+echo "cipher AES-256-CBC" >> ~/client-configs/base.conf
 echo "remote-cert-tls server" >> ~/client-configs/base.conf
-echo "comp-lzo" >> ~/client-configs/base.conf
+#echo "comp-lzo" >> ~/client-configs/base.conf
 echo "verb 3" >> ~/client-configs/base.conf
 echo "key-direction 1" >> ~/client-configs/base.conf
 echo "explicit-exit-notify $notify" >> ~/client-configs/base.conf
