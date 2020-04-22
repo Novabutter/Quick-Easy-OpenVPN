@@ -51,7 +51,7 @@ cd ~/OpenVPN/CA/
 ## Another prompt
 echo "yes" | ./easyrsa sign-req server server 1>/dev/null
 sudo cp ~/OpenVPN/CA/pki/issued/server.crt /etc/openvpn
-cp ~/OpenVPN/CA/pki/ca.crt ~/client-configs/keys/
+cp ~/OpenVPN/CA/pki/ca.crt ~/client-configs/keys/ca.crt
 sudo cp ~/OpenVPN/CA/pki/ca.crt /etc/openvpn
 cd ~/OpenVPN/Server
 ./easyrsa gen-dh
@@ -195,17 +195,30 @@ fi
 # script-security 2
 # up /etc/openvpn/update-resolv-conf
 # down /etc/openvpn/update-resolv-conf
+
 mkdir -p ~/client-configs/clients
 cd ~/client-configs/
-touch ~/client-configs/clients/client1.ovpn
-KEY_DIR=""
-BASE_CONFIG=""
+# for i in {0..$numClients}
+# do
+# cat ~/client-configs/base.conf > ~/client-configs/clients/client1.ovpn
+# echo "<ca>" >> ~/client-configs/clients/client1.ovpn
+# cat ~/client-configs/keys/ca.crt >> ~/client-configs/clients/client1.ovpn
+# echo "</ca>" >> ~/client-configs/clients/client1.ovpn
+# echo "<cert>" >> ~/client-configs/clients/client1.ovpn
+# cat ~/client-configs/keys/client1.crt >> ~/client-configs/clients/client1.ovpn
+# cat ~/client-configs/keys/client1.key >> ~/client-configs/clients/client1.ovpn
+# echo "</key>" >> ~/client-configs/clients/client1.ovpn
+# echo "<tls-auth>" >> ~/client-configs/clients/client1.ovpn
+# cat ~/client-configs/keys/ta.key >> ~/client-configs/clients/client1.ovpn
+# echo "</tls-auth>)"  >> ~/client-configs/clients/client1.ovpn
 cat ~/client-configs/base.conf > ~/client-configs/clients/client1.ovpn
 echo "<ca>" >> ~/client-configs/clients/client1.ovpn
 cat ~/client-configs/keys/ca.crt >> ~/client-configs/clients/client1.ovpn
 echo "</ca>" >> ~/client-configs/clients/client1.ovpn
 echo "<cert>" >> ~/client-configs/clients/client1.ovpn
 cat ~/client-configs/keys/client1.crt >> ~/client-configs/clients/client1.ovpn
+echo "</cert>" >> ~/client-configs/clients/client1.ovpn
+echo "<key>" >> ~/client-configs/clients/client1.ovpn
 cat ~/client-configs/keys/client1.key >> ~/client-configs/clients/client1.ovpn
 echo "</key>" >> ~/client-configs/clients/client1.ovpn
 echo "<tls-auth>" >> ~/client-configs/clients/client1.ovpn
@@ -218,9 +231,7 @@ echo "</tls-auth>)"  >> ~/client-configs/clients/client1.ovpn
 echo -e "[ * ] VPN client configs generated"
 cp ~/client-configs/clients/client*.ovpn ~/Desktop/
 echo -e "[ + ] Locking down VPN setup files"
-## chattr too
-#sudo chmod -R 400 ~/client-configs && sudo chattr +i -R ~/client-configs ############ Added this line. Take out if problems copying.
-#udo chmod -R 000 ~/OpenVPN/CA && sudo chattr +i -R ~/OpenVPN/CA 
-#sudo chmod -R 400 ~/OpenVPN/Server && sudo chattr +i -R ~/OpenVPN/Server
-#cd ~/client-configs/clients/
+sudo chmod -R 400 ~/client-configs && sudo chattr +i -R ~/client-configs ############ Added this line. Take out if problems copying.
+sudo chmod -R 000 ~/OpenVPN/CA && sudo chattr +i -R ~/OpenVPN/CA 
+sudo chmod -R 400 ~/OpenVPN/Server && sudo chattr +i -R ~/OpenVPN/Server
 echo -e "[ + ] FINISHED! VPN Setup complete!"    
