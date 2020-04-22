@@ -90,25 +90,30 @@ cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
 
 # Customize server.conf file
 read -p 'What port is the VPN running on? Default is [1194]: ' port
-if [ $port = "" ]
+if [ $port="" ]
 then
 	port="1194"
+else
+	port=$port
 fi
 echo "port $port" > ~/OpenVPN/CA/server.conf
 echo "tls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
 
 read -p 'TCP or UDP? Default is [udp]: ' protocol
-if [ $protocol = "" ]
+if [ $protocol="" ]
 then
 	protocol="udp"
-elif [ $protocol = "tcp" -o  $protocol = "TCP" ] 
-then
-	echo "explicit-exit-notify 1" >> ~/OpenVPN/CA/server.conf
-	protocol="tcp"
+	notify=1
+elif [ $protocol="tcp" -o  $protocol="TCP" ] 
+		protocol="tcp"
+	notify=0
 else
 	protocol="udp"
+	notify=1
 fi
 echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
+echo "explicit-exit-notify $notify" >> ~/OpenVPN/CA/server.conf
+
 ## prompt; 
 ### TUN = only traffic, TAP = all traffic
 read -p 'All traffic goes through VPN (tap) or related traffic goes through VPN (tun)? Default is [tun]: ' type
@@ -123,8 +128,13 @@ echo "key server.key" >> ~/OpenVPN/CA/server.conf
 echo "dh dh.pem" >> ~/OpenVPN/CA/server.conf
 echo "auth SHA256" >> ~/OpenVPN/CA/server.conf
 echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf ## This is a temporary default until you get the network determination in.
-## prompt for universal access via one configuration file (security risk)
-# echo "duplicate-cn" >> server.conf
+echo "--- The follwing is useful to allow if using a single client profile to share ---"
+read -p 'Allow multiple connections per client (potential security risk)? (Y/N): ' duplicateAllow
+if [[ $duplicateAllow = "Y" || $duplicateAllow = "y" ]]
+then
+	echo "duplicate-cn" >> ~/OpenVPN/CA/server.conf
+fi
+done
 echo "ifconfig-pool-persist ipp.txt" >> ~/OpenVPN/CA/server.conf
 echo "user nobody" >> ~/OpenVPN/CA/server.conf
 echo "group nogroup" >> ~/OpenVPN/CA/server.conf
@@ -187,10 +197,8 @@ echo "remote-cert-tls server" >> ~/client-configs/base.conf
 echo "comp-lzo" >> ~/client-configs/base.conf
 echo "verb 3" >> ~/client-configs/base.conf
 echo "key-direction 1" >> ~/client-configs/base.conf
-if [ $protocol="tcp" ] 
-then
-	echo "explicit-exit-notify 1" >> ~/client-configs/base.conf
-fi
+echo "explicit-exit-notify $notify" >> ~/client-configs/base.conf
+
 # if reading "Are there any linux clients that will be connected?". If yes, add the following lines.
 # script-security 2
 # up /etc/openvpn/update-resolv-conf
@@ -224,7 +232,7 @@ cat ~/client-configs/keys/client1.key >> ~/client-configs/clients/client1.ovpn
 echo "</key>" >> ~/client-configs/clients/client1.ovpn
 echo "<tls-auth>" >> ~/client-configs/clients/client1.ovpn
 cat ~/client-configs/keys/ta.key >> ~/client-configs/clients/client1.ovpn
-echo "</tls-auth>)"  >> ~/client-configs/clients/client1.ovpn
+echo "</tls-auth>"  >> ~/client-configs/clients/client1.ovpn
 
 
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
