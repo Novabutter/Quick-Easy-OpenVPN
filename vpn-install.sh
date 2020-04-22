@@ -90,11 +90,9 @@ cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
 
 # Customize server.conf file
 read -p 'What port is the VPN running on? Default is [1194]: ' port
-if [ $port="" ]
+if [ -z $port ]
 then
 	port="1194"
-else
-	port=$port
 fi
 echo "port $port" > ~/OpenVPN/CA/server.conf
 echo "tls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
@@ -233,10 +231,6 @@ echo "</key>" >> ~/client-configs/clients/client1.ovpn
 echo "<tls-auth>" >> ~/client-configs/clients/client1.ovpn
 cat ~/client-configs/keys/ta.key >> ~/client-configs/clients/client1.ovpn
 echo "</tls-auth>"  >> ~/client-configs/clients/client1.ovpn
-
-
-# read -p 'How many individuals will need their own unique connection file?: ' numClients
-
 echo -e "[ * ] VPN client configs generated"
 cp ~/client-configs/clients/client*.ovpn ~/Desktop/
 echo -e "[ + ] Locking down VPN setup files"
