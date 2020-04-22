@@ -197,16 +197,16 @@ fi
 mkdir -p ~/client-configs/clients
 cd ~/client-configs/
 touch ~/client-configs/clients/client1.ovpn
-KEY_DIR="~/client-configs/keys"
-BASE_CONFIG="~/client-configs/base.conf"
-cat "$BASE_CONFIG" > ~/client-configs/clients/client1.ovpn
+KEY_DIR=""
+BASE_CONFIG=""
+cat ~/client-configs/base.conf > ~/client-configs/clients/client1.ovpn
 echo "(echo -e '<ca>')" >> ~/client-configs/clients/client1.ovpn
-cat "$KEY_DIR/ca.crt" >> ~/client-configs/clients/client1.ovpn
+cat ~/client-configs/keys/ca.crt >> ~/client-configs/clients/client1.ovpn
 echo "(echo -e '</ca>\n<cert>')" >> ~/client-configs/clients/client1.ovpn
-cat "$KEY_DIR/client1.crt" >> ~/client-configs/clients/client1.ovpn
-cat "$KEY_DIR/client1.key" >> ~/client-configs/clients/client1.ovpn
+cat ~/client-configs/keys/client1.crt >> ~/client-configs/clients/client1.ovpn
+cat ~/client-configs/keys/client1.key >> ~/client-configs/clients/client1.ovpn
 echo "(echo -e '</key>\n<tls-auth>')" >> ~/client-configs/clients/client1.ovpnn
-cat "$KEY_DIR/ta.key" >> ~/client-configs/clients/client1.ovpn
+cat ~/client-configs/keys/ta.key >> ~/client-configs/clients/client1.ovpn
 echo "(echo -e '</tls-auth>')"  >> ~/client-configs/clients/client1.ovpn
 
 
