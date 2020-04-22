@@ -58,15 +58,17 @@ openvpn --genkey --secret ta.key 1>/dev/null
 sudo cp ~/OpenVPN/Server/ta.key /etc/openvpn
 sudo cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
 mkdir -p ~/client-configs/keys
-chmod -R 700 ~/client-configs ############ BE SURE TO WHEN THE SCRIPT IS DONE chmod 400 this.
-## Prompt 'How many clients do you have?', then loop that many times. 
-#################### For loop here asking how many clients.
+chmod -R 700 ~/client-configs 
+# read -p 'How many clients will their be?: ' numClients
+# for i in {0..$numClients}
+# do
 echo "" | ./easyrsa gen-req client1 nopass 1>/dev/null
 cp ~/OpenVPN/Server/pki/private/client1.key ~/client-configs/keys/
 cd ~/OpenVPN/CA
 ./easyrsa import-req ~/OpenVPN/Server/pki/reqs/client1.req client1 1>/dev/null 
-## Another prompt
+
 echo "yes" | ./easyrsa sign-req client client1
+# done
 cp ~/OpenVPN/CA/pki/issued/client1.crt ~/client-configs/keys/
 ####################
 cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
@@ -183,7 +185,7 @@ fi
 # up /etc/openvpn/update-resolv-conf
 # down /etc/openvpn/update-resolv-conf
 mkdir -p ~/client-configs/clients
-cd ~/client-configs
+cd ~/client-configs/
 touch ~/client-configs/clients/client1.ovpn
 KEY_DIR="~/client-configs/keys"
 OUTPUT_DIR="~/client-configs/clients"
@@ -200,10 +202,7 @@ echo "(echo -e '</tls-auth>')"  >> ${OUTPUT_DIR}/client1.ovpn
 
 
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
-# for i in {0..$numClients}
-# do
-#./make_config.sh client1  ### Need to dynamic change
-# done
+
 echo -e "[ * ] VPN client configs generated"
 cp ~/client-configs/clients/client*.ovpn ~/Desktop/
 echo -e "[ + ] Locking down VPN setup files"
