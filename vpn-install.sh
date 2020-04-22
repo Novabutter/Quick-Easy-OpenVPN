@@ -184,6 +184,7 @@ fi
 # down /etc/openvpn/update-resolv-conf
 mkdir -p ~/client-configs/clients
 cd ~/client-configs
+touch ~/client-configs/clients/client1.ovpn
 KEY_DIR="~/client-configs/keys"
 OUTPUT_DIR="~/client-configs/clients"
 BASE_CONFIG="~/client-configs/base.conf"
