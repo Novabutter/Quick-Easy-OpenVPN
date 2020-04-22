@@ -105,6 +105,7 @@ then
 	protocol="udp"
 	notify=1
 elif [[ $protocol="tcp" || $protocol="TCP" ]]
+then
 	protocol="tcp"
 	notify=0
 else
