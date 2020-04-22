@@ -197,20 +197,17 @@ fi
 mkdir -p ~/client-configs/clients
 cd ~/client-configs/
 touch ~/client-configs/clients/client1.ovpn
-echo "hello" > ~/client-configs/clients/client1.ovpn
 KEY_DIR="~/client-configs/keys"
-OUTPUT_DIR="~/client-configs/clients"
 BASE_CONFIG="~/client-configs/base.conf"
-# echo "cat $BASE_CONFIG" > $OUTPUT_DIR/client1.ovpn
-# echo "(echo -e '<ca>')" >> $OUTPUT_DIR/client1.ovpn
-# cat "$KEY_DIR/ca.crt" >> $OUTPUT_DIR/client1.ovpn
-# echo "(echo -e '</ca>\n<cert>')" >> $OUTPUT_DIR/client1.ovpn
-# cat "$KEY_DIR/client1.crt" >> $OUTPUT_DIR/client1.ovpn
-# cat "$KEY_DIR/client1.key" >> $OUTPUT_DIR/client1.ovpn
-# echo "(echo -e '</key>\n<tls-auth>')" >> $OUTPUT_DIR/client1.ovpn
-# cat "$KEY_DIR/ta.key" >> $OUTPUT_DIR/client1.ovpn
-# echo "(echo -e '</tls-auth>')"  >> $OUTPUT_DIR/client1.ovpn
-echo "you" >> $OUTPUT_DIR/client1.ovpn
+cat "$BASE_CONFIG" > ~/client-configs/clients/client1.ovpn
+echo "(echo -e '<ca>')" >> ~/client-configs/clients/client1.ovpn
+cat "$KEY_DIR/ca.crt" >> ~/client-configs/clients/client1.ovpn
+echo "(echo -e '</ca>\n<cert>')" >> ~/client-configs/clients/client1.ovpn
+cat "$KEY_DIR/client1.crt" >> ~/client-configs/clients/client1.ovpn
+cat "$KEY_DIR/client1.key" >> ~/client-configs/clients/client1.ovpn
+echo "(echo -e '</key>\n<tls-auth>')" >> ~/client-configs/clients/client1.ovpnn
+cat "$KEY_DIR/ta.key" >> ~/client-configs/clients/client1.ovpn
+echo "(echo -e '</tls-auth>')"  >> ~/client-configs/clients/client1.ovpn
 
 
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
@@ -219,8 +216,8 @@ echo -e "[ * ] VPN client configs generated"
 cp ~/client-configs/clients/client*.ovpn ~/Desktop/
 echo -e "[ + ] Locking down VPN setup files"
 ## chattr too
-#sudo chmod -R 400 ~/client-configs ############ Added this line. Take out if problems copying.
-#sudo chmod -R 000 ~/OpenVPN/CA
-#sudo chmod -R 400 ~/OpenVPN/Server
+sudo chmod -R 400 ~/client-configs && sudo chattr +i -R ~/client-configs ############ Added this line. Take out if problems copying.
+sudo chmod -R 000 ~/OpenVPN/CA && sudo chattr +i -R ~/OpenVPN/CA 
+sudo chmod -R 400 ~/OpenVPN/Server && sudo chattr +i -R ~/OpenVPN/Server
 #cd ~/client-configs/clients/
 echo -e "[ + ] FINISHED! VPN Setup complete!"    
