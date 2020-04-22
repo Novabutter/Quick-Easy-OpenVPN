@@ -190,7 +190,7 @@ echo "persist-tun" >> ~/client-configs/base.conf
 #echo "ca ca.crt" >> ~/client-configs/base.conf
 #echo "cert client.crt" >> ~/client-configs/base.conf
 #echo "key client.key" >> ~/client-configs/base.conf
-echo "tls-auth ta.key 1" >> ~/client-configs/base.conf
+#echo "tls-auth ta.key 1" >> ~/client-configs/base.conf
 echo "auth SHA256" >> ~/client-configs/base.conf
 echo "cipher AES-256-CBC" >> ~/client-configs/base.conf
 echo "remote-cert-tls server" >> ~/client-configs/base.conf
