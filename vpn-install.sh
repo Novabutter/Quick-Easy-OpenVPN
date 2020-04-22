@@ -104,8 +104,8 @@ if [ $protocol="" ]
 then
 	protocol="udp"
 	notify=1
-elif [ $protocol="tcp" -o  $protocol="TCP" ] 
-		protocol="tcp"
+elif [[ $protocol="tcp" || $protocol="TCP" ]]
+	protocol="tcp"
 	notify=0
 else
 	protocol="udp"
