@@ -8,7 +8,7 @@
 echo -e "[ + ] Installing OpenVPN"
 sudo apt-get update 1>/dev/null && sudo apt-get install openvpn -y 1>/dev/null
 echo -e "[ + ] Installing Persistant iptables"
-sudo apt-get install iptables-persistent -y 1>/dev/null
+sudo apt-get install iptables-persistent -y
 # Get EasyRSA for signing keys and certs
 echo -e "[ + ] Get EasyRSA for signing keys and certs."
 mkdir ~/OpenVPN
@@ -187,17 +187,16 @@ cd ~/client-configs
 KEY_DIR="~/client-configs/keys"
 OUTPUT_DIR="~/client-configs/clients"
 BASE_CONFIG="~/client-configs/base.conf"
-echo "${BASE_CONFIG} \
-    <(echo -e '<ca>') \
-    ${KEY_DIR}/ca.crt \
-    <(echo -e '</ca>\n<cert>') \
-    ${KEY_DIR}/client1.crt \
-    <(echo -e '</cert>\n<key>') \
-    ${KEY_DIR}/client1.key \
-    <(echo -e '</key>\n<tls-auth>') \
-    ${KEY_DIR}/ta.key \
-    <(echo -e '</tls-auth>')"
-    > ${OUTPUT_DIR}/client1.ovpn # needs to by dynamic
+echo "cat $BASE_CONFIG" > ${OUTPUT_DIR}/client1.ovpn
+echo "(echo -e '<ca>')" >> ${OUTPUT_DIR}/client1.ovpn
+cat "$KEY_DIR/ca.crt" >> ${OUTPUT_DIR}/client1.ovpn
+echo "(echo -e '</ca>\n<cert>')" >> ${OUTPUT_DIR}/client1.ovpn
+cat "$KEY_DIR/client1.crt" >> ${OUTPUT_DIR}/client1.ovpn
+cat "$KEY_DIR/client1.key" >> ${OUTPUT_DIR}/client1.ovpn
+echo "(echo -e '</key>\n<tls-auth>')" >> ${OUTPUT_DIR}/client1.ovpn
+cat "$KEY_DIR/ta.key" >> ${OUTPUT_DIR}/client1.ovpn
+echo "(echo -e '</tls-auth>')"  >> ${OUTPUT_DIR}/client1.ovpn
+
 
 # read -p 'How many individuals will need their own unique connection file?: ' numClients
 # for i in {0..$numClients}
