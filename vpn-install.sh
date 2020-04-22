@@ -51,6 +51,7 @@ cd ~/OpenVPN/CA/
 ## Another prompt
 echo "yes" | ./easyrsa sign-req server server 1>/dev/null
 sudo cp ~/OpenVPN/CA/pki/issued/server.crt /etc/openvpn
+mkdir -p ~/client-configs/keys
 cp ~/OpenVPN/CA/pki/ca.crt ~/client-configs/keys/ca.crt
 sudo cp ~/OpenVPN/CA/pki/ca.crt /etc/openvpn
 cd ~/OpenVPN/Server
@@ -58,7 +59,6 @@ cd ~/OpenVPN/Server
 openvpn --genkey --secret ta.key 1>/dev/null
 sudo cp ~/OpenVPN/Server/ta.key /etc/openvpn
 sudo cp ~/OpenVPN/Server/pki/dh.pem /etc/openvpn
-mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs 
 # read -p 'How many clients will their be? Default is [1]: ' numClients
 # if [ $numClients="" ]
@@ -90,7 +90,7 @@ cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
 
 # Customize server.conf file
 read -p 'What port is the VPN running on? Default is [1194]: ' port
-if [ $port="" ]
+if [ $port = "" ]
 then
 	port="1194"
 fi
@@ -98,10 +98,10 @@ echo "port $port" > ~/OpenVPN/CA/server.conf
 echo "tls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
 
 read -p 'TCP or UDP? Default is [udp]: ' protocol
-if [ $protocol="" ]
+if [ $protocol = "" ]
 then
 	protocol="udp"
-elif [ $protocol="tcp" -o  $protocol="TCP" ] 
+elif [ $protocol = "tcp" -o  $protocol = "TCP" ] 
 then
 	echo "explicit-exit-notify 1" >> ~/OpenVPN/CA/server.conf
 	protocol="tcp"
@@ -112,7 +112,7 @@ echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
 ## prompt; 
 ### TUN = only traffic, TAP = all traffic
 read -p 'All traffic goes through VPN (tap) or related traffic goes through VPN (tun)? Default is [tun]: ' type
-if [ $type="" ]
+if [ $type = "" ]
 then
 	type="tun"
 fi
@@ -129,7 +129,7 @@ echo "ifconfig-pool-persist ipp.txt" >> ~/OpenVPN/CA/server.conf
 echo "user nobody" >> ~/OpenVPN/CA/server.conf
 echo "group nogroup" >> ~/OpenVPN/CA/server.conf
 read -p 'Reaching to another network? (Y/N) Default is [N]: ' pushAnswer
-if [ $pushAnswer="" ]
+if [ $pushAnswer = "" ]
 then
 	pushAnswer="N"
 fi
@@ -200,17 +200,18 @@ mkdir -p ~/client-configs/clients
 cd ~/client-configs/
 # for i in {0..$numClients}
 # do
-# cat ~/client-configs/base.conf > ~/client-configs/clients/client1.ovpn
-# echo "<ca>" >> ~/client-configs/clients/client1.ovpn
-# cat ~/client-configs/keys/ca.crt >> ~/client-configs/clients/client1.ovpn
-# echo "</ca>" >> ~/client-configs/clients/client1.ovpn
-# echo "<cert>" >> ~/client-configs/clients/client1.ovpn
-# cat ~/client-configs/keys/client1.crt >> ~/client-configs/clients/client1.ovpn
-# cat ~/client-configs/keys/client1.key >> ~/client-configs/clients/client1.ovpn
-# echo "</key>" >> ~/client-configs/clients/client1.ovpn
-# echo "<tls-auth>" >> ~/client-configs/clients/client1.ovpn
-# cat ~/client-configs/keys/ta.key >> ~/client-configs/clients/client1.ovpn
-# echo "</tls-auth>)"  >> ~/client-configs/clients/client1.ovpn
+	# cat ~/client-configs/base.conf > ~/client-configs/clients/client{$i}.ovpn
+	# echo "<ca>" >> ~/client-configs/clients/client{$i}.ovpn
+	# cat ~/client-configs/keys/ca.crt >> ~/client-configs/clients/client{$i}.ovpn
+	# echo "</ca>" >> ~/client-configs/clients/client{$i}.ovpn
+	# echo "<cert>" >> ~/client-configs/clients/client{$i}.ovpn
+	# cat ~/client-configs/keys/client1.crt >> ~/client-configs/clients/client{$i}.ovpn
+	# cat ~/client-configs/keys/client1.key >> ~/client-configs/clients/client{$i}.ovpn
+	# echo "</key>" >> ~/client-configs/clients/client{$i}.ovpn
+	# echo "<tls-auth>" >> ~/client-configs/clients/client{$i}.ovpn
+	# cat ~/client-configs/keys/ta.key >> ~/client-configs/clients/client{$i}.ovpn
+	# echo "</tls-auth>)"  >> ~/client-configs/clients/client{$i}.ovpn
+# done
 cat ~/client-configs/base.conf > ~/client-configs/clients/client1.ovpn
 echo "<ca>" >> ~/client-configs/clients/client1.ovpn
 cat ~/client-configs/keys/ca.crt >> ~/client-configs/clients/client1.ovpn
