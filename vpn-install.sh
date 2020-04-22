@@ -100,26 +100,26 @@ echo "port $port" > ~/OpenVPN/CA/server.conf
 echo "tls-auth ta.key 0 # This file is secret" >> ~/OpenVPN/CA/server.conf
 
 read -p 'TCP or UDP? Default is [udp]: ' protocol
-if [ $protocol="" ]
+if [[ $protocol = "tcp" || $protocol = "TCP" ]];
 then
-	protocol="udp"
-	notify=1
-elif [[ $protocol="tcp" || $protocol="TCP" ]]
-then
-	protocol="tcp"
-	notify=0
+        protocol="tcp"
+        notify=0
 else
-	protocol="udp"
-	notify=1
+        protocol="udp"
+        notify=1
 fi
+echo $protocol $notify
+
 echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
 echo "explicit-exit-notify $notify" >> ~/OpenVPN/CA/server.conf
 
 ## prompt; 
 ### TUN = only traffic, TAP = all traffic
 read -p 'All traffic goes through VPN (tap) or related traffic goes through VPN (tun)? Default is [tun]: ' type
-if [ $type = "" ]
+if [[ $type = "tap" || $type = "TAP" ]]
 then
+	type="tap"
+else
 	type="tun"
 fi
 echo "dev $type" >> ~/OpenVPN/CA/server.conf
@@ -135,7 +135,6 @@ if [[ $duplicateAllow = "Y" || $duplicateAllow = "y" ]]
 then
 	echo "duplicate-cn" >> ~/OpenVPN/CA/server.conf
 fi
-done
 echo "ifconfig-pool-persist ipp.txt" >> ~/OpenVPN/CA/server.conf
 echo "user nobody" >> ~/OpenVPN/CA/server.conf
 echo "group nogroup" >> ~/OpenVPN/CA/server.conf
