@@ -2,7 +2,6 @@
 ## DEV NOTES
 ### Make everything testable to let the user know what failed.
 ### Currently only for aptitude based OS
-### Consider nuking the replacements for server.conf and client.conf and just custom making a file.
 ### Look into hardening on docs
 # Install OpenVPN
 echo -e "[ + ] Installing OpenVPN"
@@ -128,6 +127,7 @@ echo "key server.key" >> ~/OpenVPN/CA/server.conf
 echo "dh dh.pem" >> ~/OpenVPN/CA/server.conf
 echo "auth SHA256" >> ~/OpenVPN/CA/server.conf
 echo "cipher AES-256-CBC" >> ~/OpenVPN/CA/server.conf
+INTERNAL_NET="10.8.0.0/24"
 echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf ## This is a temporary default until you get the network determination in.
 echo "--- The follwing is useful to allow if using a single client profile to share ---"
 read -p 'Allow multiple connections per client (potential security risk)? (Y/N): ' duplicateAllow
@@ -169,7 +169,7 @@ sudo iptables -A FORWARD -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT #Ubuntu 19 does not like -m
 sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT #Ubuntu 19 does not like -m
 sudo iptables -A OUTPUT -o $type+ -j ACCEPT
-sudo iptables -A POSTROUTING 10.8.0.0/24 -o $INTERFACE -j MASQUERADE ##########Needs to be changed
+sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $INTERFACE -j MASQUERADE ##########Needs to be changed
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
