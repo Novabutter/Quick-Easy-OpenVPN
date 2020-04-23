@@ -147,7 +147,7 @@ while [[ $pushAnswer = "Y" || $pushAnswer = "y" ]]
 do
 	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
 	read -p 'Subnet Mask (ex. 255.255.255.0): ' subMask
-	echo 'push "route ${netAddress} ${subMask}"' >> ~/OpenVPN/CA/server.conf
+	echo "push 'route $netAddress $subMask'" >> ~/OpenVPN/CA/server.conf
 	read -p "Add more networks? (Y/N): " pushAnswer
 done
 #echo 'push "dhcp-option DNS 1.1.1.2"' >> ~/OpenVPN/CA/server.conf
@@ -161,12 +161,15 @@ echo "verb 3" >> ~/OpenVPN/CA/server.conf
 sudo cp ~/OpenVPN/CA/server.conf /etc/openvpn/
 echo "net.ipv4.ip_forward=1" >> sudo tee -a /etc/sysctl.conf 
 # Add iptable/firewall rules
-INTERFACE="$( ip -o link show | awk '{print $2,$9}' | grep "UP" | cut -d: -f 1 | cut -d@ -f 1)"
-sudo iptables -A INPUT -i $INTERFACE -m state --state NEW -p $protocol --dport $port -j ACCEPT
+INTERFACE="$( ip -o link show | awk '{print $2,$9}' | grep "UP" | cut -d: -f 1 | cut -d@ -f 1)" #Ubuntu 19 cannot find interface like this.
+#sudo iptables -A INPUT -i $INTERFACE -m state --state NEW -p $protocol --dport $port -j ACCEPT
+sudo iptables -A INPUT -i $INTERFACE -p $protocol --dport $port -j ACCEPT
 sudo iptables -A INPUT -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -j ACCEPT
-sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
-sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT #Ubuntu 19 does not like -m
+sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT #Ubuntu 19 does not like -m
+sudo iptables -A OUTPUT -o $type+ -j ACCEPT
+sudo iptables -A POSTROUTING 10.8.0.0/24 -o $INTERFACE -j MASQUERADE ##########Needs to be changed
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
