@@ -102,6 +102,7 @@ if [[ $protocol = "tcp" || $protocol = "TCP" ]];
 then
         protocol="tcp"
         notify=0
+        echo "explicit-exit-notify $notify" >> ~/OpenVPN/CA/server.conf
 else
         protocol="udp"
         notify=1
@@ -109,7 +110,7 @@ fi
 echo $protocol $notify
 
 echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
-echo "explicit-exit-notify $notify" >> ~/OpenVPN/CA/server.conf
+
 
 ## prompt; 
 ### TUN = only traffic, TAP = all traffic
@@ -169,7 +170,8 @@ sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m state --state RELATED,ESTABL
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
-sudo systemctl enable openvpn@server 1>/dev/null && sudo /etc/init.d/openvpn restart 1>/dev/null
+sudo service openvpn restart 1>/dev/null && sudo systemctl enable openvpn
+#sudo systemctl enable openvpn@server 1>/dev/null && sudo /etc/init.d/openvpn restart 1>/dev/null
 echo -e "[ + ] OpenVPN Server Running!"
 # Create Client Configuration
 echo -e "[ + ] Create Client Configs"
