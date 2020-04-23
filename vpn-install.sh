@@ -152,7 +152,7 @@ done
 #echo 'push "dhcp-option DNS 1.1.1.2"' >> ~/OpenVPN/CA/server.conf
 #echo 'push "dhcp-option DNS 1.1.1.1"' >> ~/OpenVPN/CA/server.conf
 echo "keepalive 10 120" >> ~/OpenVPN/CA/server.conf
-echo "comp-lzo" >> ~/OpenVPN/CA/server.conf
+#echo "comp-lzo" >> ~/OpenVPN/CA/server.conf
 echo "persist-key" >> ~/OpenVPN/CA/server.conf
 echo "persist-tun" >> ~/OpenVPN/CA/server.conf
 echo "status openvpn-status.log" >> ~/OpenVPN/CA/server.conf
@@ -197,7 +197,7 @@ echo "remote-cert-tls server" >> ~/client-configs/base.conf
 #echo "comp-lzo" >> ~/client-configs/base.conf
 echo "verb 3" >> ~/client-configs/base.conf
 echo "key-direction 1" >> ~/client-configs/base.conf
-echo "explicit-exit-notify $notify" >> ~/client-configs/base.conf
+#echo "explicit-exit-notify $notify" >> ~/client-configs/base.conf
 
 # if reading "Are there any linux clients that will be connected?". If yes, add the following lines.
 # script-security 2
