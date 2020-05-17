@@ -21,7 +21,6 @@ cp -r ~/OpenVPN/CA/* ~/OpenVPN/Server/
 cd ~/OpenVPN/CA
 #cp ~/OpenVPN/CA/vars.example ~/OpenVPN/CA/vars
 
-
 echo -e "[ + ] Generating Certificates & Keys"
 read -p 'Country: ' reqCountry
 read -p 'State/Province: ' reqState
@@ -85,8 +84,6 @@ cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
 #sudo cp /etc/openvpn/ca.crt ~/client-configs/keys/
  echo -e "[ + ] Customizing server configuration" 
 
-
-
 # Customize server.conf file
 read -p 'What port is the VPN running on? Default is [1194]: ' port
 if [ -z $port ]
@@ -110,9 +107,6 @@ echo $protocol $notify
 
 echo "proto $protocol" >> ~/OpenVPN/CA/server.conf
 
-
-## prompt; 
-### TUN = only traffic, TAP = all traffic
 read -p 'All traffic goes through VPN (tap) or related traffic goes through VPN (tun)? Default is [tun]: ' type
 if [[ $type = "tap" || $type = "TAP" ]]
 then
@@ -190,8 +184,8 @@ sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $INTERFACE -j MASQUERADE #
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
-sudo service openvpn restart 1>/dev/null && sudo systemctl enable openvpn
-#sudo systemctl enable openvpn@server 1>/dev/null && sudo /etc/init.d/openvpn restart 1>/dev/null
+#sudo service openvpn restart 1>/dev/null && sudo systemctl enable openvpn
+sudo systemctl enable openvpn@server 1>/dev/null && sudo /etc/init.d/openvpn restart 1>/dev/null
 echo -e "[ + ] OpenVPN Server Running!"
 # Create Client Configuration
 echo -e "[ + ] Create Client Configs"
