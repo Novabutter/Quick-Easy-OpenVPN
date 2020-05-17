@@ -180,7 +180,7 @@ sudo iptables -A FORWARD -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT #Ubuntu 19 does not like -m
 sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT #Ubuntu 19 does not like -m
 sudo iptables -A OUTPUT -o $type+ -j ACCEPT
-sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $INTERFACE -j MASQUERADE ##########Needs to be changed
+sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $INTERFACE -j MASQUERADE ##########Needs to be changed
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
