@@ -19,7 +19,6 @@ mv ~/OpenVPN/EasyRSA-3.0.4 ~/OpenVPN/CA
 mkdir ~/OpenVPN/Server
 cp -r ~/OpenVPN/CA/* ~/OpenVPN/Server/
 cd ~/OpenVPN/CA
-#cp ~/OpenVPN/CA/vars.example ~/OpenVPN/CA/vars
 
 echo -e "[ + ] Generating Certificates & Keys"
 read -p 'Country: ' reqCountry
@@ -77,9 +76,7 @@ cd ~/OpenVPN/CA
 ./easyrsa import-req ~/OpenVPN/Server/pki/reqs/client1.req client1 1>/dev/null 
 
 echo "yes" | ./easyrsa sign-req client client1
-# done
 cp ~/OpenVPN/CA/pki/issued/client1.crt ~/client-configs/keys/
-####################
 cp ~/OpenVPN/Server/ta.key ~/client-configs/keys/
 #sudo cp /etc/openvpn/ca.crt ~/client-configs/keys/
  echo -e "[ + ] Customizing server configuration" 
@@ -122,7 +119,7 @@ echo "dh dh.pem" >> ~/OpenVPN/CA/server.conf
 echo "auth SHA256" >> ~/OpenVPN/CA/server.conf
 echo "cipher AES-256-CBC" >> ~/OpenVPN/CA/server.conf
 INTERNAL_NET="10.8.0.0/24"
-echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf ## This is a temporary default until you get the network determination in.
+echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf 
 echo "--- The follwing is useful to allow if using a single client profile to share ---"
 read -p 'Allow multiple connections per client (potential security risk)? (Y/N): ' duplicateAllow
 if [[ $duplicateAllow = "Y" || $duplicateAllow = "y" ]]
@@ -147,7 +144,6 @@ done
 #echo 'push "dhcp-option DNS 1.1.1.2"' >> ~/OpenVPN/CA/server.conf
 #echo 'push "dhcp-option DNS 1.1.1.1"' >> ~/OpenVPN/CA/server.conf
 echo "keepalive 10 120" >> ~/OpenVPN/CA/server.conf
-#echo "comp-lzo" >> ~/OpenVPN/CA/server.conf
 echo "persist-key" >> ~/OpenVPN/CA/server.conf
 echo "persist-tun" >> ~/OpenVPN/CA/server.conf
 echo "status openvpn-status.log" >> ~/OpenVPN/CA/server.conf
@@ -173,18 +169,18 @@ echo "INVALID OPTION. SETTING TO DEFAULT."
 INTERFACE=${ints[0]}
 }
 fi
-#sudo iptables -A INPUT -i $INTERFACE -m state --state NEW -p $protocol --dport $port -j ACCEPT
+
 sudo iptables -A INPUT -i $INTERFACE -p $protocol --dport $port -j ACCEPT
 sudo iptables -A INPUT -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -j ACCEPT
-sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT #Ubuntu 19 does not like -m
-sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT #Ubuntu 19 does not like -m
+sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT 
+sudo iptables -A FORWARD -i $INTERFACE -o $type+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -o $type+ -j ACCEPT
-sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $INTERFACE -j MASQUERADE ##########Needs to be changed
+sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $INTERFACE -j MASQUERADE 
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
-#sudo service openvpn restart 1>/dev/null && sudo systemctl enable openvpn
+
 sudo systemctl enable openvpn@server 1>/dev/null && sudo /etc/init.d/openvpn restart 1>/dev/null
 echo -e "[ + ] OpenVPN Server Running!"
 # Create Client Configuration
@@ -203,17 +199,11 @@ echo "user nobody" >> ~/client-configs/base.conf
 echo "group nogroup" >> ~/client-configs/base.conf
 echo "persist-key" >> ~/client-configs/base.conf
 echo "persist-tun" >> ~/client-configs/base.conf
-#echo "ca ca.crt" >> ~/client-configs/base.conf
-#echo "cert client.crt" >> ~/client-configs/base.conf
-#echo "key client.key" >> ~/client-configs/base.conf
-#echo "tls-auth ta.key 1" >> ~/client-configs/base.conf
 echo "auth SHA256" >> ~/client-configs/base.conf
 echo "cipher AES-256-CBC" >> ~/client-configs/base.conf
 echo "remote-cert-tls server" >> ~/client-configs/base.conf
-#echo "comp-lzo" >> ~/client-configs/base.conf
 echo "verb 3" >> ~/client-configs/base.conf
 echo "key-direction 1" >> ~/client-configs/base.conf
-#echo "explicit-exit-notify $notify" >> ~/client-configs/base.conf
 
 # if reading "Are there any linux clients that will be connected?". If yes, add the following lines.
 # script-security 2
