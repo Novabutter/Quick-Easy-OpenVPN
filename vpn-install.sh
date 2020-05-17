@@ -170,7 +170,7 @@ do
         ints+=($i)
         count=$count+1
 done
-read -p "Which interface number? Default is [0] which is [${ints[0]}]: " intSel>
+read -p "Which interface number? Default is [0] which is [${ints[0]}]: " intSelectNum
 if [[ $intSelectNum -ge 0 && $intSelectNum < $count ]];
 then
 INTERFACE=${ints[$intSelectNum]}
