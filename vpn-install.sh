@@ -197,7 +197,7 @@ echo "client" > ~/client-configs/base.conf
 echo "dev $type" >> ~/client-configs/base.conf
 echo "proto $protocol" >> ~/client-configs/base.conf
 echo "remote $ip $port" >> ~/client-configs/base.conf
-echo "resolv-retry-infinite" >> ~/client-configs/base.conf
+echo "resolv-retry infinite" >> ~/client-configs/base.conf
 echo "nobind" >> ~/client-configs/base.conf
 echo "user nobody" >> ~/client-configs/base.conf
 echo "group nogroup" >> ~/client-configs/base.conf
