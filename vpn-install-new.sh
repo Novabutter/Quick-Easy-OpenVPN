@@ -161,24 +161,7 @@ echo "verb 3" >> ~/OpenVPN/CA/server.conf
 sudo cp ~/OpenVPN/CA/server.conf /etc/openvpn/
 echo "net.ipv4.ip_forward=1" >> sudo tee -a /etc/sysctl.conf 
 # Add iptable/firewall rules
-cd /sys/class/net && \
-declare -i count=0 && \
-declare -a ints && \
-for i in *
-do
-        echo [$count] $i
-        ints+=($i)
-        count=$count+1
-done
-read -p "Which interface number? Default is [0] which is [${ints[0]}]: " intSel>
-if [[ $intSelectNum -ge 0 && $intSelectNum < $count ]];
-then
-INTERFACE=${ints[$intSelectNum]}
-else {
-echo "INVALID OPTION. SETTING TO DEFAULT."
-INTERFACE=${ints[0]}
-}
-fi
+INTERFACE="$( ip -o link show | awk '{print $2,$9}' | grep "UP" | cut -d: -f 1 | cut -d@ -f 1)" #Ubuntu 19 cannot find interface like this.
 #sudo iptables -A INPUT -i $INTERFACE -m state --state NEW -p $protocol --dport $port -j ACCEPT
 sudo iptables -A INPUT -i $INTERFACE -p $protocol --dport $port -j ACCEPT
 sudo iptables -A INPUT -i $type+ -j ACCEPT
