@@ -122,17 +122,7 @@ echo "dh dh.pem" >> ~/OpenVPN/CA/server.conf
 echo "auth SHA256" >> ~/OpenVPN/CA/server.conf
 echo "cipher AES-256-CBC" >> ~/OpenVPN/CA/server.conf
 INTERNAL_NET="10.8.0.0/24"
-# read -p 'What is the internal/virtual network? Default is [10.8.0.0]: ' internalNetAnswer
-# if [ $pushAnswer != "" ]
-# then
-# 	read -p 'Netmask Address (ex. 192.168.2.0): ' internalAddress
-# 	read -p 'Subnet Mask (ex. 255.255.255.0): ' internalsubMask
-# 	echo "server $internalAddress $internalsubMask" >> ~/OpenVPN/CA/server.conf
-# else
-# 	INTERNAL_NET="10.8.0.0/24"
-# 	echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf
-# done
- ## This is a temporary default until you get the network determination in.
+echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf ## This is a temporary default until you get the network determination in.
 echo "--- The follwing is useful to allow if using a single client profile to share ---"
 read -p 'Allow multiple connections per client (potential security risk)? (Y/N): ' duplicateAllow
 if [[ $duplicateAllow = "Y" || $duplicateAllow = "y" ]]
@@ -192,7 +182,7 @@ sudo iptables -A FORWARD -i $type+ -j ACCEPT
 sudo iptables -A FORWARD -i $type+ -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -o $type+ -i $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -o $type+ -j ACCEPT
-sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $INTERFACE -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $INTERFACE -j MASQUERADE ##########Needs to be changed
 sudo iptables-save | sudo tee -a /etc/iptables/rules.v4 1>/dev/null
 # Start OpenVPN Service
 echo -e "[ + ] Starting OpenVPN Server"
