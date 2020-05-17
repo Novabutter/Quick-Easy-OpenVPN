@@ -7,7 +7,7 @@ This is a quick and easy OpenVPN installation for Ubuntu or Debian systems. Down
 1) Clone the repo at `https://github.com/Novabutter/Quick-Easy-OpenVPN.git`, or download `vpn-install.sh`.
 2) Change the permissions on the file to be execute via the command `chmod 700 vpn-install.sh`. 
 3) Run the file as a non-root user for security reasons. You'll be asked what your super user password is as the script runs. Do this with `./vpn-install.sh`.
-4) You should have a client config spawn once this is finished. Don't forge to port-forward if necessary. 
+4) You should have a client config spawn once this is finished. Don't forget to port-forward if necessary. 
 
 # Warning
 
