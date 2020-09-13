@@ -118,8 +118,8 @@ echo "key server.key" >> ~/OpenVPN/CA/server.conf
 echo "dh dh.pem" >> ~/OpenVPN/CA/server.conf
 echo "auth SHA256" >> ~/OpenVPN/CA/server.conf
 echo "cipher AES-256-CBC" >> ~/OpenVPN/CA/server.conf
-INTERNAL_NET="10.8.0.0/24"
-echo "server 10.8.0.0 255.255.255.0" >> ~/OpenVPN/CA/server.conf 
+INTERNAL_NET="10.8.0.0/16"
+echo "server 10.8.0.0 255.255.0.0" >> ~/OpenVPN/CA/server.conf 
 echo "--- The follwing is useful to allow if using a single client profile to share ---"
 read -p 'Allow multiple connections per client (potential security risk)? (Y/N): ' duplicateAllow
 if [[ $duplicateAllow = "Y" || $duplicateAllow = "y" ]]
@@ -136,8 +136,45 @@ then
 fi
 while [[ $pushAnswer = "Y" || $pushAnswer = "y" ]]
 do
-	read -p 'Netmask Address (ex. 192.168.1.0): ' netAddress
-	read -p 'Subnet Mask (ex. 255.255.255.0): ' subMask
+	read -p 'Netmask Address & CIDR Subnet (ex. 192.168.1.0/24): ' netAddress
+	netAddress=$(echo $CIDR | cut -d "/" -f1)
+	declare -i subMask=$(echo $CIDR | cut -d "/" -f2)
+	if [[ $subMask -le 0 || $subMask -gt 30 ]];
+	then
+	  echo "Invalid CIDR notation."
+	else
+	  declare -i remainder=$((subMask % 8))
+	  declare -i fill=$((($subMask-$remainder) / 8))
+	  j=0
+	  f=256
+	  for i in $(seq 1 $remainder)
+	  do
+	    f=$((f/2))
+	    j=$((j+f))
+	  done
+	  if [[ $j -eq 0 ]];
+	  then
+	    j=255
+	  fi
+	  sub=""
+	  for k in $(seq 0 $((fill-1)))
+	  do
+	    sub="$(echo $sub"255.")"
+	  done
+	  if [[ "$((remainder % 8))" != "0" ]];
+	  then
+	    sub="$(echo $sub"$j.")"
+	  fi
+
+	  if [[ $remainder -eq 0 ]]; then
+	    fill=$((fill-1))
+	  fi
+	  for p in $(seq $((3-$fill)) -1 1) ##########
+	  do
+	    sub="$(echo $sub"0.")"
+	  done
+	  sub="$(echo ${sub%?})"
+	fi
 	echo "push 'route $netAddress $subMask'" >> ~/OpenVPN/CA/server.conf
 	read -p "Add more networks? (Y/N): " pushAnswer
 done
@@ -245,4 +282,6 @@ echo -e "[ + ] Locking down VPN setup files"
 #sudo chmod -R 400 ~/client-configs && sudo chattr +i -R ~/client-configs ############ Added this line. Take out if problems copying.
 #sudo chmod -R 000 ~/OpenVPN/CA && sudo chattr +i -R ~/OpenVPN/CA 
 #sudo chmod -R 400 ~/OpenVPN/Server && sudo chattr +i -R ~/OpenVPN/Server
-echo -e "[ + ] FINISHED! VPN Setup complete!"    
+echo -e "[ + ] FINISHED! VPN Setup complete!"
+
+    
